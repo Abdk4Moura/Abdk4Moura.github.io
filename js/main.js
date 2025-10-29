@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const ctx = canvas.getContext('2d');
     let nodes = [];
     const skills = [
-        'Python', 'TypeScript', 'Rust', 'Haskell', 'Go', 'MATLAB', 'Redis', 'Kafka', 'Spark', 'Microservices', 'Kubernetes', 'Docker', 'gRPC', 'NumPy', 'PyTorch', 'SQL', 'Linux', 'CI/CD', 'Distributed Systems'
+        'Python', 'TypeScript', 'Rust', 'Haskell', 'Go', 'Redis', 'Kafka', 'Spark', 'Microservices', 'Kubernetes', 'Docker', 'gRPC', 'NumPy', 'PyTorch', 'SQL', 'Linux', 'CI/CD', 'Distributed Systems'
     ];
     const camera = { x: 0, y: 0, scale: 1 };
     let animationFrameId = null;
