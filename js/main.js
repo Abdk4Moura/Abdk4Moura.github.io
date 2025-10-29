@@ -236,6 +236,31 @@ document.addEventListener('DOMContentLoaded', () => {
         stagger: 0.3,
     });
 
+    // --- GitHub Repos Integration ---
+    const targetLanguages = ['Python', 'Haskell', 'Go', 'Rust', 'TypeScript'];
+    const reposContainer = document.getElementById('github-repos');
+
+    fetch('https://api.github.com/users/Abdk4Moura/repos?sort=updated&per_page=20')
+        .then(response => response.json())
+        .then(repos => {
+            const filteredRepos = repos.filter(repo => targetLanguages.includes(repo.language));
+            filteredRepos.slice(0, 6).forEach(repo => { // Limit to 6
+                const card = document.createElement('div');
+                card.className = 'article-card';
+                card.innerHTML = `
+                    <h3>${repo.name}</h3>
+                    <p>${repo.description || 'No description available.'}</p>
+                    <p><strong>Language:</strong> ${repo.language}</p>
+                    <a href="${repo.html_url}" target="_blank">View on GitHub</a>
+                `;
+                reposContainer.appendChild(card);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching GitHub repos:', error);
+            reposContainer.innerHTML = '<p>Unable to load repositories at this time.</p>';
+        });
+
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas(); // Initial setup
 });
