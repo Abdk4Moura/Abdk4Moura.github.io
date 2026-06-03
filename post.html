@@ -1,40 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog Post</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        #bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .post-container {
-            padding: 2rem;
-            color: #f0f0f0;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(13, 13, 13, 0.8);
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writing · Abdulkabir Agboola</title>
+<link rel="stylesheet" href="css/apparatus.css" />
+<style>
+  .po { max-width: 760px; margin: 0 auto; padding: clamp(96px,15vh,150px) 0 40px; }
+  .po__back { font-family: var(--font-mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); text-decoration: none; }
+  .po__back:hover { color: var(--blue); }
+  .po__date { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); margin: 30px 0 8px; letter-spacing: .04em; }
+  .po__title { font-family: var(--font-display); font-weight: 700; font-size: clamp(30px,5vw,52px); line-height: 1.04; letter-spacing: -.02em; color: var(--ink); margin: 0 0 8px; }
+  .po__rule { height: 1px; background: var(--line); margin: 34px 0 8px; }
+  .prose { font-family: var(--font-body); color: var(--ink); font-size: 17px; line-height: 1.72; }
+  .prose h1, .prose h2, .prose h3, .prose h4 { font-family: var(--font-display); color: var(--ink); letter-spacing: -.01em; line-height: 1.2; margin: 2.1em 0 .6em; }
+  .prose h1 { font-size: 1.7em; } .prose h2 { font-size: 1.4em; } .prose h3 { font-size: 1.16em; } .prose h4 { font-size: 1em; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-2); font-family: var(--font-mono); }
+  .prose p { margin: 0 0 1.15em; }
+  .prose a { color: var(--blue); text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--blue) 35%, transparent); }
+  .prose a:hover { border-bottom-color: var(--blue); }
+  .prose strong { font-weight: 600; }
+  .prose em { font-style: italic; }
+  .prose ul, .prose ol { margin: 0 0 1.2em; padding-left: 1.3em; }
+  .prose li { margin: .3em 0; }
+  .prose blockquote { margin: 1.4em 0; padding: .2em 0 .2em 1.1em; border-left: 2px solid var(--line-2); color: var(--ink-2); font-style: italic; }
+  .prose code { font-family: var(--font-mono); font-size: .86em; background: var(--paper-2); padding: .12em .4em; border-radius: 4px; }
+  .prose pre { background: var(--paper-2); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; overflow-x: auto; margin: 0 0 1.3em; }
+  .prose pre code { background: none; padding: 0; font-size: .82em; line-height: 1.55; }
+  .prose hr { border: 0; height: 1px; background: var(--line); margin: 2.2em 0; }
+  .prose table { width: 100%; border-collapse: collapse; margin: 0 0 1.4em; font-size: .92em; }
+  .prose th, .prose td { border: 1px solid var(--line); padding: 8px 11px; text-align: left; }
+  .prose th { font-family: var(--font-mono); font-size: .8em; text-transform: uppercase; letter-spacing: .04em; color: var(--ink-2); background: var(--paper-2); }
+  .po__foot { max-width: 760px; margin: 0 auto; padding: 30px 0 60px; font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); display: flex; justify-content: space-between; gap: 16px; }
+</style>
+<script>try{if(localStorage.getItem('abdk-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
 </head>
 <body>
-    <canvas id="bg"></canvas>
-    <div class="post-container">
-        <div id="post-content">
-            <!-- Post content will be loaded here -->
-        </div>
-    </div>
-    <div id="theme-switcher">🌓</div>
-    <script src="js/theme.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/post.js"></script>
+
+<div class="scroll-progress" id="progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<header class="ap-nav">
+  <a class="ap-nav__id" href="index.html" data-cursor><b></b>A. AGBOOLA</a>
+  <nav class="ap-nav__links">
+    <a href="index.html#index" data-cursor>Index</a>
+    <a href="blog.html" data-cursor>Writing</a>
+    <a href="index.html#contact" data-cursor>Contact</a>
+  </nav>
+  <div class="ap-nav__end">
+    <span class="mono">2026</span>
+    <button class="theme-toggle" data-theme-toggle data-cursor type="button"><span class="i-moon"><i data-lucide="moon"></i></span><span class="i-sun"><i data-lucide="sun"></i></span></button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <article class="po">
+    <a class="po__back" href="blog.html" data-cursor>← Writing</a>
+    <div class="po__date" id="postDate"></div>
+    <h1 class="po__title" id="postTitle">Loading…</h1>
+    <div class="po__rule"></div>
+    <div class="prose" id="postBody"></div>
+  </article>
+  <div class="po__foot"><span>© 2026 Abdulkabir Agboola</span><a class="po__back" href="blog.html" data-cursor>All writing →</a></div>
+</main>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="js/ap-theme.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/ap-post.js"></script>
 </body>
 </html>

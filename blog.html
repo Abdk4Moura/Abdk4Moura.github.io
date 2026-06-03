@@ -1,41 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog - Agboola Abdulkabir Kolawole</title>
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        #bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-        .blog-container {
-            padding: 2rem;
-            color: #f0f0f0;
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: rgba(13, 13, 13, 0.8);
-            border-radius: 5px;
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Writing · Abdulkabir Agboola</title>
+<meta name="description" content="Notes, research, and writeups by Abdulkabir Agboola: systems, agents, and the places they meet." />
+<link rel="stylesheet" href="css/apparatus.css" />
+<style>
+  .bl-head { padding: clamp(92px,16vh,168px) 0 26px; }
+  .bl-head h1 { font-family: var(--font-display); font-weight: 700; font-size: clamp(40px,8vw,86px); line-height: .98; letter-spacing: -.02em; color: var(--ink); margin: 0; }
+  .bl-head h1 .dot { color: var(--blue); }
+  .bl-head p { font-family: var(--font-body); color: var(--ink-2); max-width: 48ch; margin: 18px 0 0; font-size: clamp(15px,2vw,18px); }
+  .bl-list { border-top: 1px solid var(--line); margin-top: 38px; }
+  .bl-row { display: grid; grid-template-columns: 52px 1fr auto; gap: 20px; align-items: baseline; padding: 24px 4px; border-bottom: 1px solid var(--line); text-decoration: none; color: var(--ink); transition: padding .22s var(--ease), background .22s var(--ease); }
+  .bl-row:hover { padding-left: 16px; }
+  .bl-row .n { font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+  .bl-row .ti { font-family: var(--font-display); font-weight: 500; font-size: clamp(18px,2.4vw,25px); letter-spacing: -.01em; }
+  .bl-row .su { display: block; font-family: var(--font-body); font-weight: 400; font-size: 14.5px; color: var(--ink-2); margin-top: 7px; max-width: 64ch; line-height: 1.55; }
+  .bl-row .dt { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); white-space: nowrap; }
+  .bl-empty { padding: 40px 4px; color: var(--ink-3); font-family: var(--font-mono); font-size: 12px; }
+  .bl-foot { padding: 64px 0 44px; color: var(--ink-3); font-family: var(--font-mono); font-size: 11px; letter-spacing: .04em; }
+</style>
+<script>try{if(localStorage.getItem('abdk-theme')==='dark')document.documentElement.setAttribute('data-theme','dark');}catch(e){}</script>
 </head>
 <body>
-    <canvas id="bg"></canvas>
-    <div class="blog-container">
-        <h1>Blog</h1>
-        <div id="posts">
-            <!-- Blog posts will be loaded here -->
-        </div>
-    </div>
-    <div id="theme-switcher">🌓</div>
-    <script src="js/theme.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script src="js/blog.js"></script>
+
+<div class="scroll-progress" id="progress"></div>
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<header class="ap-nav">
+  <a class="ap-nav__id" href="index.html" data-cursor><b></b>A. AGBOOLA</a>
+  <nav class="ap-nav__links">
+    <a href="index.html#index" data-cursor>Index</a>
+    <a href="blog.html" data-cursor>Writing</a>
+    <a href="index.html#contact" data-cursor>Contact</a>
+  </nav>
+  <div class="ap-nav__end">
+    <span class="mono">2026</span>
+    <button class="theme-toggle" data-theme-toggle data-cursor type="button"><span class="i-moon"><i data-lucide="moon"></i></span><span class="i-sun"><i data-lucide="sun"></i></span></button>
+  </div>
+</header>
+
+<main class="wrap" id="top">
+  <section class="bl-head">
+    <h1>Writing<span class="dot">.</span></h1>
+    <p>Notes, research, and writeups. Mostly systems, agents, and the places they meet.</p>
+  </section>
+  <div class="bl-list" id="posts"><div class="bl-empty">Loading…</div></div>
+  <footer class="bl-foot">© 2026 Abdulkabir Agboola · built from scratch</footer>
+</main>
+
+<script src="https://unpkg.com/lucide@latest"></script>
+<script src="js/ap-theme.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.9.1/showdown.min.js"></script>
+<script src="js/main.js"></script>
+<script src="js/ap-blog.js"></script>
 </body>
 </html>
