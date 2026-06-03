@@ -1,266 +1,138 @@
-document.addEventListener('DOMContentLoaded', () => {
-    gsap.registerPlugin(ScrollTrigger);
+/* ============================================================
+   main.js — interactions: custom cursor, magnetic buttons,
+   scroll-reveal, scroll progress, copy-to-clipboard, icons.
+   Lightweight & reduced-motion aware.
+   ============================================================ */
+(function () {
+  "use strict";
+  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const fine = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 
-    // --- Theme Switcher ---
-    const themeSwitcher = document.getElementById('theme-switcher');
-    const body = document.body;
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        body.classList.add(savedTheme);
+  // ---- Lucide icons ----
+  function icons() { if (window.lucide && window.lucide.createIcons) window.lucide.createIcons(); }
+  if (document.readyState !== "loading") icons();
+  else document.addEventListener("DOMContentLoaded", icons);
+
+  // ---- custom cursor (lerped ring) ----
+  if (fine && !REDUCED) {
+    const dot = document.getElementById("cursor");
+    const ring = document.getElementById("cursorRing");
+    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
+    addEventListener("mousemove", (e) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
+    });
+    (function follow() {
+      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
+      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(follow);
+    })();
+    const hoverOn = () => ring.classList.add("is-hover");
+    const hoverOff = () => ring.classList.remove("is-hover");
+    document.querySelectorAll("[data-cursor], a, button").forEach((el) => {
+      el.addEventListener("mouseenter", hoverOn);
+      el.addEventListener("mouseleave", hoverOff);
+    });
+    // hide system cursor only on fine pointers
+    document.documentElement.style.cursor = "none";
+  } else {
+    const d = document.getElementById("cursor"); const r = document.getElementById("cursorRing");
+    if (d) d.style.display = "none"; if (r) r.style.display = "none";
+  }
+
+  // ---- magnetic buttons ----
+  if (fine && !REDUCED) {
+    document.querySelectorAll("[data-magnetic]").forEach((el) => {
+      const strength = 0.3;
+      el.addEventListener("mousemove", (e) => {
+        const r = el.getBoundingClientRect();
+        const x = e.clientX - (r.left + r.width / 2);
+        const y = e.clientY - (r.top + r.height / 2);
+        el.style.transform = `translate(${x * strength}px, ${y * strength}px)`;
+      });
+      el.addEventListener("mouseleave", () => { el.style.transform = ""; });
+    });
+  }
+
+  // ---- scroll reveal (IO + scroll/timer failsafe) ----
+  const reveals = Array.prototype.slice.call(document.querySelectorAll(".reveal:not(.in)"));
+  if (REDUCED) {
+    reveals.forEach((r) => r.classList.add("in"));
+  } else {
+    function revealCheck() {
+      for (let i = reveals.length - 1; i >= 0; i--) {
+        const el = reveals[i];
+        const r = el.getBoundingClientRect();
+        if (r.top < (window.innerHeight || 0) * 0.94 && r.bottom > 0) {
+          el.classList.add("in");
+          reveals.splice(i, 1);
+        }
+      }
     }
-    themeSwitcher.addEventListener('click', () => {
-        body.classList.toggle('dark-theme');
-        if (body.classList.contains('dark-theme')) {
-            localStorage.setItem('theme', 'dark-theme');
-        } else {
-            localStorage.removeItem('theme');
-        }
-    });
-
-    // --- Chapter 1: Direct Intro Animation ---
-    gsap.from("#chapter-1 > *", {
-        opacity: 0, y: 20, duration: 1, stagger: 0.3, ease: "power3.out"
-    });
-
-    // --- Chapter 2: Continuous Scroll Transition ---
-    const introTimeline = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#chapter-1",
-            start: "top top",
-            end: "+=100%",
-            scrub: 1,
-            pin: true,
-            anticipatePin: 1
-        }
-    });
-    // Animate out the intro content
-    introTimeline.fromTo("#chapter-1 > *", 
-        { opacity: 1, y: 0 }, 
-        { opacity: 0, y: -30, stagger: 0.2, ease: "power2.in" }
-    );
-    gsap.from("#chapter-2 .philosophy-content > *", {
-        scrollTrigger: {
-            trigger: "#chapter-2",
-            start: "top 80%",
-            end: "top 40%",
-            scrub: 1,
-        },
-        opacity: 0, y: 50, stagger: 0.3, ease: "power3.out"
-    });
-
-    // --- Chapter 3 & 4: Constellation and Zoom ---
-    const canvas = document.getElementById('skill-constellation');
-    const ctx = canvas.getContext('2d');
-    let nodes = [];
-    const skills = [
-        'Python', 'TypeScript', 'Rust', 'Haskell', 'Go', 'Redis', 'Kafka', 'Spark', 'Microservices', 'Kubernetes', 'Docker', 'gRPC', 'NumPy', 'PyTorch', 'SQL', 'Linux', 'CI/CD', 'Distributed Systems'
-    ];
-    const camera = { x: 0, y: 0, scale: 1 };
-    let animationFrameId = null;
-
-    function createNodes() {
-        const centerX = canvas.width / 2;
-        const centerY = canvas.height / 2;
-        const radius = Math.min(canvas.width, canvas.height) * 0.3;
-        nodes = skills.map((skill, i) => {
-            const angle = (i / skills.length) * Math.PI * 2;
-            return {
-                x: centerX + radius * Math.cos(angle) + (Math.random() - 0.5) * 50,
-                y: centerY + radius * Math.sin(angle) + (Math.random() - 0.5) * 50,
-                vx: (Math.random() - 0.5) * 0.5,
-                vy: (Math.random() - 0.5) * 0.5,
-                text: skill,
-                radius: 4,
-                alpha: 1
-            };
-        });
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => {
+        es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+      }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
+      reveals.forEach((r) => io.observe(r));
     }
+    // Failsafe: some embedded/headless contexts never drive IO — reveal
+    // anything already on-screen via scroll + a couple of timers so the
+    // page is never stuck invisible.
+    addEventListener("scroll", revealCheck, { passive: true });
+    addEventListener("resize", revealCheck);
+    setTimeout(revealCheck, 400);
+    setTimeout(revealCheck, 1400);
+    revealCheck();
+  }
 
-    function draw() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.save();
-        ctx.translate(canvas.width / 2, canvas.height / 2);
-        ctx.scale(camera.scale, camera.scale);
-        ctx.translate(-camera.x, -camera.y);
-
-        const themeColor = getComputedStyle(body).getPropertyValue('--accent-color').trim();
-        const textColor = getComputedStyle(body).getPropertyValue('--text-color').trim();
-
-        nodes.forEach(node => {
-            if (camera.scale === 1) {
-                node.x += node.vx;
-                node.y += node.vy;
-                if (node.x < 0 || node.x > canvas.width) node.vx *= -1;
-                if (node.y < 0 || node.y > canvas.height) node.vy *= -1;
-            }
-            ctx.globalAlpha = node.alpha;
-            ctx.beginPath();
-            ctx.arc(node.x, node.y, node.radius, 0, Math.PI * 2);
-            ctx.fillStyle = themeColor;
-            ctx.fill();
-            ctx.font = '14px Inter';
-            ctx.fillStyle = textColor;
-            ctx.fillText(node.text, node.x + 10, node.y + 5);
-        });
-
-        for (let i = 0; i < nodes.length; i++) {
-            for (let j = i + 1; j < nodes.length; j++) {
-                const dist = Math.hypot(nodes[i].x - nodes[j].x, nodes[i].y - nodes[j].y);
-                if (dist < 150) {
-                    ctx.globalAlpha = nodes[i].alpha * nodes[j].alpha * (1 - (dist / 150));
-                    ctx.beginPath();
-                    ctx.moveTo(nodes[i].x, nodes[i].y);
-                    ctx.lineTo(nodes[j].x, nodes[j].y);
-                    ctx.strokeStyle = themeColor;
-                    ctx.lineWidth = 0.5;
-                    ctx.stroke();
-                }
-            }
-        }
-        ctx.globalAlpha = 1;
-        ctx.restore();
-    }
-
-    function resizeCanvas() {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
-        camera.x = canvas.width / 2;
-        camera.y = canvas.height / 2;
-        camera.scale = 1;
-        createNodes();
-        draw(); // Initial draw
-    }
-
-    ScrollTrigger.create({
-        trigger: "#chapter-3",
-        start: "top bottom",
-        end: "bottom top",
-        onEnter: () => {
-            if (!animationFrameId) {
-                const animate = () => {
-                    draw();
-                    animationFrameId = requestAnimationFrame(animate);
-                };
-                animate();
-            }
-        },
-        onLeave: () => { cancelAnimationFrame(animationFrameId); animationFrameId = null; },
-        onEnterBack: () => {
-             if (!animationFrameId) {
-                const animate = () => {
-                    draw();
-                    animationFrameId = requestAnimationFrame(animate);
-                };
-                animate();
-            }
-        },
-        onLeaveBack: () => { cancelAnimationFrame(animationFrameId); animationFrameId = null; }
+  // ---- scroll progress bar ----
+  const bar = document.getElementById("progress");
+  let ticking = false;
+  function onScroll() {
+    if (ticking) return; ticking = true;
+    requestAnimationFrame(() => {
+      const st = document.documentElement.scrollTop || document.body.scrollTop;
+      const sh = (document.documentElement.scrollHeight || 0) - innerHeight;
+      bar.style.width = (sh > 0 ? (st / sh) * 100 : 0) + "%";
+      ticking = false;
     });
+  }
+  addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
 
-    const zoomTarget = () => nodes.find(n => n.text === 'Distributed Systems');
-    const zoomTimeline = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#chapter-3",
-            start: "top top",
-            end: "+=200%",
-            scrub: 1.5,
-            pin: true,
-        }
+  // ---- smooth anchor scroll ----
+  document.querySelectorAll('a[href^="#"]').forEach((a) => {
+    a.addEventListener("click", (e) => {
+      const id = a.getAttribute("href");
+      if (id === "#" || id.length < 2) return;
+      const t = document.querySelector(id);
+      if (!t) return;
+      e.preventDefault();
+      t.scrollIntoView({ behavior: REDUCED ? "auto" : "smooth", block: "start" });
     });
+  });
 
-    zoomTimeline.from("#chapter-3 h2", { opacity: 0, y: -50 });
-    zoomTimeline.to(camera, {
-        x: () => zoomTarget() ? zoomTarget().x : (canvas.width / 2),
-        y: () => zoomTarget() ? zoomTarget().y : (canvas.height / 2),
-        scale: 15,
-        ease: "power2.inOut",
-    }, ">+=0.5");
-    zoomTimeline.to(nodes.filter(n => n.text !== 'Distributed Systems'), {
-        alpha: 0,
-        ease: "power2.inOut",
-    }, "<");
-    zoomTimeline.to("#skill-constellation", { opacity: 0 }, ">-=0.5");
-    zoomTimeline.from("#chapter-4", { opacity: 0 }, "<");
-
-    gsap.from(".timeline-item", {
-        scrollTrigger: { trigger: "#chapter-4", start: "top 60%", end: "bottom 80%", scrub: 1 },
-        opacity: 0, x: -50, stagger: 0.3
+  // ---- copy email ----
+  const copyBtn = document.getElementById("copyBtn");
+  if (copyBtn) {
+    const EMAIL = "work.kaiserlautern@gmail.com";
+    const txt = document.getElementById("copyTxt");
+    const ico = document.getElementById("copyIco");
+    copyBtn.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(EMAIL); }
+      catch (_) {
+        const ta = document.createElement("textarea"); ta.value = EMAIL; document.body.appendChild(ta);
+        ta.select(); try { document.execCommand("copy"); } catch (e) {} document.body.removeChild(ta);
+      }
+      copyBtn.classList.add("copied");
+      txt.textContent = "copied to clipboard";
+      ico.setAttribute("data-lucide", "check"); icons();
+      clearTimeout(copyBtn._t);
+      copyBtn._t = setTimeout(() => {
+        copyBtn.classList.remove("copied");
+        txt.textContent = EMAIL;
+        ico.setAttribute("data-lucide", "copy"); icons();
+      }, 1900);
     });
-
-    // --- Chapter 5: Dot Expansion Transition ---
-    const expansionTimeline = gsap.timeline({
-        scrollTrigger: {
-            trigger: "#chapter-4",
-            start: "bottom 90%",
-            end: "+=150%",
-            scrub: 1.5,
-            pin: true,
-        }
-    });
-
-    const lastDot = document.querySelector(".timeline-item:last-child .timeline-dot");
-
-    expansionTimeline.to(".timeline-item h3, .timeline-item p, .timeline-item:not(:last-child) .timeline-dot, #chapter-4 h2", {
-        opacity: 0,
-        ease: "power1.in"
-    });
-
-    const scaleX = window.innerWidth / lastDot.offsetWidth;
-    const scaleY = window.innerHeight / lastDot.offsetHeight;
-    const scale = Math.max(scaleX, scaleY) * 1.2;
-
-    expansionTimeline.to(lastDot, {
-        scale: scale,
-        backgroundColor: "var(--bg-color)",
-        ease: "power2.inOut",
-    }, "<+=0.2");
-
-    expansionTimeline.from(".article-card", {
-        opacity: 0,
-        y: 50,
-        scale: 0.95,
-        stagger: 0.1,
-        ease: "power2.out",
-    }, "<+=0.5");
-
-    // --- Chapter 6: Final Fade-in ---
-    gsap.from("#chapter-6 > *", {
-        scrollTrigger: {
-            trigger: "#chapter-6",
-            start: "top 80%",
-            end: "top 50%",
-            scrub: 1,
-        },
-        opacity: 0,
-        y: 30,
-        stagger: 0.3,
-    });
-
-    // --- GitHub Repos Integration ---
-    const targetLanguages = ['Python', 'Haskell', 'Go', 'Rust', 'TypeScript'];
-    const reposContainer = document.getElementById('github-repos');
-
-    fetch('https://api.github.com/users/Abdk4Moura/repos?sort=updated&per_page=20')
-        .then(response => response.json())
-        .then(repos => {
-            const filteredRepos = repos.filter(repo => targetLanguages.includes(repo.language));
-            filteredRepos.slice(0, 6).forEach(repo => { // Limit to 6
-                const card = document.createElement('div');
-                card.className = 'article-card';
-                card.innerHTML = `
-                    <h3>${repo.name}</h3>
-                    <p>${repo.description || 'No description available.'}</p>
-                    <p><strong>Language:</strong> ${repo.language}</p>
-                    <a href="${repo.html_url}" target="_blank">View on GitHub</a>
-                `;
-                reposContainer.appendChild(card);
-            });
-        })
-        .catch(error => {
-            console.error('Error fetching GitHub repos:', error);
-            reposContainer.innerHTML = '<p>Unable to load repositories at this time.</p>';
-        });
-
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas(); // Initial setup
-});
+  }
+})();
