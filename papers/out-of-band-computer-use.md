@@ -1,7 +1,7 @@
 ---
 title: Out-of-Band Computer Use: Operating Unmodified Machines Through the Human Interface
-date: 2026-06-03
-summary: Most computer-use agents drive a machine they are installed inside. I argue for an out-of-band body, HID for the hands and video for the eyes, that operates any unmodified machine the way a human would, and that the loss this entails is the very thing that makes it general.
+date: 2026-06-04
+summary: Most computer-use agents drive a machine they are installed inside. I argue for an out-of-band body, HID for the hands and video for the eyes, that operates any unmodified machine the way a human would, and that the loss this entails is the very thing that makes it general. The figures here are live; the mathematics renders inline.
 ---
 
 ## Abstract
@@ -72,6 +72,17 @@ running. Between the two, input we can simulate and output we can observe, sits 
 computer use, and it is an old and human loop: *see the surface, choose an act, deliver the act, see
 again.*
 
+Let me put that loop in symbols, because the whole argument hangs on what each step is allowed to
+forget. Let $s_t$ be the true state of the machine at step $t$, which I never get to hold. My body
+only ever receives an observation $o_t = C(s_t)$, where $C$ is the *capture*: a screenshot if I am let
+in, a frame off the cable if I am not. A policy $\pi$ reads the observation and whatever context
+$c_t$ I am allowed to carry, a goal, a region to attend to, a memory of where I just was, and chooses
+the act $a_t$. The act lands, the world turns over, and I look again:
+
+$$ o_t = C(s_t), \qquad a_t = \pi(o_t,\, c_t), \qquad s_{t+1} = T(s_t,\, a_t). $$
+
+<div class="ap-fig" data-fig="loop" data-cap="<b>The loop, and only the loop.</b> See the surface, decide, act through the body, see again. Drag the pace and watch the token travel: the model, never the channel, sets how many acts land per minute. The body is deliberately dumb. All of the intelligence lives in one station."></div>
+
 The novelty was never the loop. It is the *audience*. The surface we read and the controls we drive
 were composed for a person, and what we are doing, this is the crux, is *feeding into machine
 consumption what was meant for a human audience.* Everything generous about the method, and everything
@@ -89,13 +100,27 @@ willing to expose its bones.
 
 The **out-of-band** posture refuses that dependence, and pays for the refusal in fidelity. A model
 reading pixels meant for human eyes recovers less than an API would simply tell it; the channel is
-*lossy in nature*. I want to argue that this is the right bargain, and for the reason the whole thing
-turns on: *even with a context given to the perception step, we neither expect nor assume we need the
-full of our input back in our output.* The loop is a compression and was always meant to be. A person
-sitting down at an unfamiliar machine does not memorize the screen. They pull the one affordance they
-need and let the rest fall away. The out-of-band agent is that behavior, mechanized, and so it inherits
-the property that made human operation universal in the first place: it needs nothing *of* the machine
-beyond the surface the machine already shows to anyone who looks.
+*lossy in nature*. I want to say exactly what that loss is, and why I do not mourn it. In the plain
+language of information, the capture throws bits away,
+
+$$ H(o_t) \,\ll\, H(s_t), $$
+
+the frame carries far fewer bits than the machine's real state. The in-band instinct is to close that
+gap. Mine is to ask a smaller question. The act I owe does not depend on all of $s_t$; it depends on a
+thin, decision-relevant slice of it. Write $A^\star$ for the act a perfect operator would choose from
+the true state. What I actually need the channel to carry is not the state, but the *act*, which is to
+say I need
+
+$$ I(o_t;\, A^\star) \;=\; I(s_t;\, A^\star). $$
+
+The observation must hold all of the state's information *about the next act*, even while it discards
+almost everything else. Put the other way: call two states equivalent, $s \sim s'$, when they call for
+the same act, and the capture has only to keep the equivalence classes apart, never to reconstruct the
+state inside them. A frame can lose nearly every pixel and still be *lossless in the only currency the
+loop spends.* That is what I mean by lossy by design. I am not failing to recover the screen; I am
+choosing the operating point where the rate is low and the part that decides the next act survives.
+
+<div class="ap-fig" data-fig="lossy" data-cap="<b>Lossy by design.</b> Lower the information budget and the frame falls apart as a picture. The one act it must support, find the control and press it, survives long past the point where the image stops being legible. The ring marks where the agent would still aim. Pixel fidelity is not the currency the loop spends; the act is."></div>
 
 Two things follow. First, the eyes need not be a black box. Rather than inferring blind over a raw
 frame, perception can be *narrowed by a context element*, a goal, a region to attend to, a memory of
@@ -128,9 +153,27 @@ The out-of-band body is, said plainly, *an intelligence seated where a KVM sits*
 keyboard/video/mouse position from which an operator has always run a server even with its operating
 system dead on the floor. Where the in-band agent drives machines it was *let into*, the out-of-band
 agent works any machine the way a person physically would, through the screen it shows and the ports it
-leaves open. So the set of machines it can touch is a *superset* of the in-band set, and the difference
-between them is exactly the population that matters most out in the world: the machines one is
-forbidden, or simply unable, to install anything upon.
+leaves open.
+
+Make the reach a statement about sets, because it is one. Let $M$ be the machines in the world. The
+in-band body can touch only those it is allowed inside,
+
+$$ R_{\text{in}} = \bigl\{\, m \in M : \text{you may install on } m,\ \text{hold permissions on } m,\ \text{and the OS of } m \text{ is up and willing} \,\bigr\}. $$
+
+The out-of-band body asks for none of that. It needs a surface to watch and a port to speak into, and
+nothing else,
+
+$$ R_{\text{out}} = \bigl\{\, m \in M : m \text{ shows a display and accepts a human-interface device} \,\bigr\}. $$
+
+Every machine in the first set is in the second, and the second holds strictly more,
+
+$$ R_{\text{in}} \;\subseteq\; R_{\text{out}}. $$
+
+The gap $R_{\text{out}} \setminus R_{\text{in}}$ is not a rounding error. It is the locked-down, the
+air-gapped, the pre-boot, the regulated, and the things that were never quite computers, which is to
+say *the population this whole paper is about*.
+
+<div class="ap-fig" data-fig="reach" data-cap="<b>Reach is a claim about sets.</b> Flip the body. In-band lights only the machines you may install on and hold permissions over; out-of-band lights anything that shows a display and takes a keyboard. The second set contains the first, and the difference is exactly where the work in finance, health, government, and the plant floor actually lives."></div>
 
 ---
 
@@ -140,17 +183,21 @@ The brain arranges itself in one of two ways, and the author puts the choice as 
 *vision-understanding* model reads the frame and feeds its reading, as input, to a *language* model
 that chooses the act, or a single, *end-to-end* multimodal model that sees and chooses in one breath.
 
-
 Either way the decision has to be *grounded*. The affordance the model named, "the OK button," "the
 field," has to become a real act on the surface, which is to say, most often, a coordinate. And here
-the out-of-band body pays its fidelity tax in the open. Two small problems keep recurring. The model
-speaks in *absolute* targets, and a mouse moves in *relative* ones, so I close the gap with an absolute
-path, a virtual pointer that spans the screen, and a relative fallback (pin to a corner, then step in
-by the exact offset) for the channels, the Bluetooth ones especially, that will only ever move
-relatively. And because the target cannot tell our synthetic hand from a living one, the *manner* of
-the act can be made human, an eased and slightly curved motion rather than a teleport, which earns its
-keep both against systems that sniff for non-human input and for the simple legibility of the agent to
-whoever is watching over it.
+the out-of-band body pays its fidelity tax in the open. The model speaks in *absolute* targets, a point
+$p \in [0,1]^2$ on the normalized surface, while a mouse, the Bluetooth ones especially, will often
+only move in *relative* steps. When I have an absolute pointer I send $p$ straight through. When I do
+not, I pin to a known corner $q_0$ and walk in by the measured offset,
+
+$$ \Delta = p - q_{\text{cur}}, $$
+
+correcting as the next frame tells me where the cursor actually went, which folds the grounding error
+back into the loop instead of trusting it once and hoping. And because the target cannot tell my
+synthesized hand from a living one, the *manner* of the act can be made human, an eased and slightly
+curved path $p(\tau)$, $\tau \in [0,1]$, with $p(0)$ the start and $p(1)$ the target, rather than a
+teleport. That earns its keep twice: against systems that sniff for input too clean to be human, and
+for the plain legibility of the agent to whoever is watching over it.
 
 Then the act goes down the body of §4, the surface changes, a fresh look closes the loop, and we go
 again.
@@ -213,11 +260,17 @@ Three axes, of which the first is the one this paper is really about.
 The honest measure is *reach*. Lay out the kinds of target: the cloud VM, the willing desktop app, the
 managed and locked-down PC, the air-gapped box, the BIOS or recovery screen, the kiosk and the HMI and
 the ATM, the television. Then mark, plainly, which an in-band agent can operate *at all* and which an
-out-of-band one can. The thesis makes a flat prediction: out-of-band strictly dominates on reach, and
-pays for it in precision. The second axis is *task success*: ordinary tasks run through the out-of-band
-body across the three desktops, read against the in-band ceiling. And the third is *the price of the
-loss*: the same tasks done in-band, with structure, and out-of-band, with only pixels, and the gap
-between them named in numbers.
+out-of-band one can. The thesis makes a flat prediction, the one drawn in §4: out-of-band strictly
+dominates on reach, $R_{\text{in}} \subseteq R_{\text{out}}$, and pays for it in precision. The second
+axis is *task success*: ordinary tasks run through the out-of-band body across the three desktops, read
+against the in-band ceiling. And the third is *the price of the loss*: name the gap in numbers,
+
+$$ \delta \;=\; \mathrm{succ}_{\text{in}} - \mathrm{succ}_{\text{out}}, $$
+
+the same tasks done in-band with structure and out-of-band with only pixels, and the distance between
+them is the toll the channel charges for asking *nothing* of the target. The whole bet of the paper is
+that $\delta$ is small where it can be measured, and that it is bought back cheaply, while the reach it
+unlocks is not available to the in-band way at any price.
 
 ---
 
