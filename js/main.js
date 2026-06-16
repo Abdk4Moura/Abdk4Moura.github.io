@@ -94,7 +94,7 @@
   // ---- copy email ----
   const copyBtn = document.getElementById("copyBtn");
   if (copyBtn) {
-    const EMAIL = "work.kaiserlautern@gmail.com";
+    const EMAIL = "pro.kaiserlautern@gmail.com";
     const txt = document.getElementById("copyTxt");
     const ico = document.getElementById("copyIco");
     copyBtn.addEventListener("click", async () => {
