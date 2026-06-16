@@ -1,5 +1,5 @@
 /* ============================================================
-   main.js — interactions: custom cursor, magnetic buttons,
+   main.js, interactions: custom cursor, magnetic buttons,
    scroll-reveal, scroll progress, copy-to-clipboard, icons.
    Lightweight & reduced-motion aware.
    ============================================================ */
@@ -13,29 +13,8 @@
   if (document.readyState !== "loading") icons();
   else document.addEventListener("DOMContentLoaded", icons);
 
-  // ---- custom cursor (lerped ring) ----
-  if (fine && !REDUCED) {
-    const dot = document.getElementById("cursor");
-    const ring = document.getElementById("cursorRing");
-    let mx = innerWidth / 2, my = innerHeight / 2, rx = mx, ry = my;
-    addEventListener("mousemove", (e) => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.transform = `translate(${mx}px, ${my}px) translate(-50%,-50%)`;
-    });
-    (function follow() {
-      rx += (mx - rx) * 0.18; ry += (my - ry) * 0.18;
-      ring.style.transform = `translate(${rx}px, ${ry}px) translate(-50%,-50%)`;
-      requestAnimationFrame(follow);
-    })();
-    const hoverOn = () => ring.classList.add("is-hover");
-    const hoverOff = () => ring.classList.remove("is-hover");
-    document.querySelectorAll("[data-cursor], a, button").forEach((el) => {
-      el.addEventListener("mouseenter", hoverOn);
-      el.addEventListener("mouseleave", hoverOff);
-    });
-    // hide system cursor only on fine pointers
-    document.documentElement.style.cursor = "none";
-  } else {
+  // ---- cursor: keep the normal system cursor (calmer, less try-hard) ----
+  {
     const d = document.getElementById("cursor"); const r = document.getElementById("cursorRing");
     if (d) d.style.display = "none"; if (r) r.style.display = "none";
   }
@@ -75,7 +54,7 @@
       }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
       reveals.forEach((r) => io.observe(r));
     }
-    // Failsafe: some embedded/headless contexts never drive IO — reveal
+    // Failsafe: some embedded/headless contexts never drive IO, reveal
     // anything already on-screen via scroll + a couple of timers so the
     // page is never stuck invisible.
     addEventListener("scroll", revealCheck, { passive: true });

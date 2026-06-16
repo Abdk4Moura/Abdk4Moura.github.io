@@ -1,9 +1,9 @@
 /* ============================================================
-   apparatus.css — Direction D · "Apparatus"
+   apparatus.css, Direction D · "Apparatus"
    A standalone Swiss-technical / instrument-datasheet system.
-   NO Cadayn tokens, NO base.css — fully self-contained.
+   NO Cadayn tokens, NO base.css, fully self-contained.
    Type:  Space Grotesk (display) · Spline Sans (body) · IBM Plex Mono (labels)
-   Color: cool paper · near-black ink · ultramarine + vermilion (two-tone tech)
+   Color: warm paper · near-black ink · forest green + warm clay (calmer, organic)
    Shares only the brand-agnostic animation engine (reads --anim-*).
    ============================================================ */
 
@@ -18,8 +18,8 @@
   --ink-3:     #8A887E;
   --line:      rgba(23,21,15,.14);
   --line-2:    rgba(23,21,15,.32);
-  --blue:      #1B3CFF;
-  --red:       #FF3B2E;
+  --blue:      #2F6B47;
+  --red:       #B85C38;
 
   --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-body:    'Spline Sans', system-ui, sans-serif;
@@ -27,11 +27,11 @@
 
   /* animation palette (engine reads these) */
   --anim-paper: #FBFBF7; --anim-hero-bg: #F1F0EA; --anim-fade: rgba(241,240,234,0.06);
-  --anim-hero-ink: rgba(23,21,15,0.07); --anim-hero-accent: rgba(27,60,255,0.16);
+  --anim-hero-ink: rgba(23,21,15,0.07); --anim-hero-accent: rgba(47,107,71,0.18);
   --anim-ink: #17150F; --anim-line: rgba(23,21,15,0.16); --anim-line-soft: rgba(23,21,15,0.08);
   --anim-line-strong: rgba(23,21,15,0.42); --anim-muted: #8A887E;
-  --anim-coral: #1B3CFF; --anim-pink: #FF3B2E; --anim-plum: #1B3CFF; --anim-rose: #FF3B2E;
-  --anim-err: rgba(255,59,46,0.6);
+  --anim-coral: #2F6B47; --anim-pink: #B85C38; --anim-plum: #2F6B47; --anim-rose: #B85C38;
+  --anim-err: rgba(184,92,56,0.55);
 
   --ease: cubic-bezier(.2,.7,.2,1);
   --t: 200ms;
@@ -48,14 +48,14 @@
   --ink-3:   #6E6C66;
   --line:    rgba(242,241,234,.14);
   --line-2:  rgba(242,241,234,.30);
-  --blue:    #6E89FF;
-  --red:     #FF6A5E;
+  --blue:    #7FB58C;
+  --red:     #E0916A;
 
   --anim-paper: #16161B; --anim-hero-bg: #0E0E11; --anim-fade: rgba(14,14,17,0.07);
-  --anim-hero-ink: rgba(242,241,234,0.07); --anim-hero-accent: rgba(110,137,255,0.22);
+  --anim-hero-ink: rgba(242,241,234,0.07); --anim-hero-accent: rgba(127,181,140,0.22);
   --anim-ink: #F2F1EA; --anim-line: rgba(242,241,234,0.18); --anim-line-soft: rgba(242,241,234,0.09);
   --anim-line-strong: rgba(242,241,234,0.42); --anim-muted: #6E6C66;
-  --anim-coral: #6E89FF; --anim-pink: #FF6A5E; --anim-plum: #6E89FF; --anim-rose: #FF6A5E;
+  --anim-coral: #7FB58C; --anim-pink: #E0916A; --anim-plum: #7FB58C; --anim-rose: #E0916A;
 }
 
 * { box-sizing: border-box; }

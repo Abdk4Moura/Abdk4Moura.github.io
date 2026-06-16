@@ -1,5 +1,5 @@
 /* ============================================================
-   ap-figures.js — interactive figures for papers.
+   ap-figures.js, interactive figures for papers.
    Canvas 2D, theme-aware (reads apparatus CSS vars), pauses
    off-screen and on hidden tab, honors prefers-reduced-motion.
 
@@ -51,7 +51,7 @@
   }
 
   /* ---------------------------------------------------------------
-     FIGURE 1 — the perceive / decide / act loop
+     FIGURE 1, the perceive / decide / act loop
      --------------------------------------------------------------- */
   const FIGS = {};
 
@@ -116,7 +116,7 @@
   };
 
   /* ---------------------------------------------------------------
-     FIGURE 2 — reach: in-band ⊆ out-of-band
+     FIGURE 2, reach: in-band ⊆ out-of-band
      --------------------------------------------------------------- */
   FIGS.reach = function (ctx, ui, dim) {
     const mode = ui.segmented({
@@ -188,7 +188,7 @@
   }
 
   /* ---------------------------------------------------------------
-     FIGURE 3 — lossy by design: pixel fidelity falls, the act survives
+     FIGURE 3, lossy by design: pixel fidelity falls, the act survives
      --------------------------------------------------------------- */
   FIGS.lossy = function (ctx, ui, dim) {
     const budget = ui.slider({ label: "information budget", min: 4, max: 100, value: 100, step: 1, unit: "%" });

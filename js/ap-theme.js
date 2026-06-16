@@ -1,5 +1,5 @@
 /* ============================================================
-   theme.js — light/dark toggle, persisted, broadcasts "themechange"
+   theme.js, light/dark toggle, persisted, broadcasts "themechange"
    so the canvas figures (animations.js) recolor live.
    The initial theme is applied by a tiny inline <head> script to
    avoid a flash; this file only handles the toggle button(s).

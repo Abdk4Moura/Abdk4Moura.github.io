@@ -1,4 +1,4 @@
-/* ap-papers.js — papers index. Reads papers/papers.json (a list of
+/* ap-papers.js, papers index. Reads papers/papers.json (a list of
    markdown filenames), pulls each paper's front-matter, sorts newest-first,
    renders apparatus-styled rows linking into paper.html. No build step.
    To add a paper: drop the .md in papers/ and add its name to papers.json. */

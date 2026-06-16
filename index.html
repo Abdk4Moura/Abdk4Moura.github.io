@@ -8,7 +8,7 @@
 <link rel="icon" href="favicon-32.png" sizes="32x32" type="image/png" />
 <link rel="apple-touch-icon" href="apple-touch-icon.png" />
 <meta name="theme-color" content="#17150F" />
-<meta name="description" content="Abdulkabir Agboola, systems & backend engineer and independent researcher. A technical index of shipped, open, and research-grade work." />
+<meta name="description" content="Abdulkabir Agboola, systems engineer and independent researcher. Shipped systems, open source, and independent research, built end to end." />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link rel="stylesheet" href="css/apparatus.css" />
@@ -23,9 +23,9 @@
 <header class="ap-nav">
   <a class="ap-nav__id" href="#top" data-cursor><b></b>A. AGBOOLA</a>
   <nav class="ap-nav__links">
-    <a href="#index" data-cursor>Index</a>
+    <a href="#index" data-cursor>Work</a>
     <a href="papers.html" data-cursor>Papers</a>
-    <a href="#appendix" data-cursor>Appendix</a>
+    <a href="#appendix" data-cursor>Notes</a>
     <a href="#contact" data-cursor>Contact</a>
   </nav>
   <div class="ap-nav__end">
@@ -42,15 +42,15 @@
     <div class="ap-hero__frame"></div>
     <span class="ap-hero__corner tr"></span><span class="ap-hero__corner bl"></span>
     <div class="ap-hero__tags">
-      <span>Portfolio / 2026</span>
-      <span>07 Figures · 02 Research</span>
+      <span>Portfolio · 2026</span>
+      <span>Eight things · three with research</span>
     </div>
     <div class="ap-hero__inner">
       <h1 class="reveal in">Abdulkabir<br />Agboola<span class="dot">.</span></h1>
       <div class="ap-hero__row">
-        <p class="ap-hero__tag reveal in d1">Systems &amp; backend engineer and independent researcher. I build <b>correctness-critical</b> software: payment ledgers, distributed systems, compiler tooling. And I research how <b>multi-agent systems</b> and <b>LLMs</b> actually behave.</p>
+        <p class="ap-hero__tag reveal in d1">I'm a systems engineer and independent researcher. I like building the whole thing, from the math down to something you can hold: payment systems that can't lose money, compiler tooling, a noise-cancelling app that runs on your phone. Lately a lot of my time goes to how <b>LLMs</b> and <b>multi-agent systems</b> actually behave.</p>
         <div class="ap-hero__meta reveal in d2">
-          <a href="#index" data-cursor>↓ Index</a>
+          <a href="#index" data-cursor>↓ The work</a>
           <a href="mailto:work.kaiserlautern@gmail.com" data-cursor>Email</a>
           <a href="https://github.com/Abdk4Moura" target="_blank" rel="noopener" data-cursor>GitHub</a>
         </div>
@@ -61,8 +61,8 @@
   <!-- ============ INDEX TABLE ============ -->
   <section class="ap-index wrap" id="index">
     <div class="ap-index__head">
-      <h2>Index of work</h2>
-      <span>N=07 · updated 2026</span>
+      <h2>Things I've built</h2>
+      <span>eight of them · updated 2026</span>
     </div>
     <a class="ap-row" href="#d1" data-cursor><span class="n">01</span><span class="ti">LLM representational faithfulness</span><span class="dm">Research · LLMs</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
     <a class="ap-row" href="#d2" data-cursor><span class="n">02</span><span class="ti">Exactly-once payment ledger</span><span class="dm">Payments · Systems</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
@@ -71,6 +71,7 @@
     <a class="ap-row" href="#d5" data-cursor><span class="n">05</span><span class="ti">Quickshare</span><span class="dm">Networking · OSS</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
     <a class="ap-row" href="#d6" data-cursor><span class="n">06</span><span class="ti">Agent-based models</span><span class="dm">Multi-agent · Research</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
     <a class="ap-row" href="#d7" data-cursor><span class="n">07</span><span class="ti">Out-of-band computer-use</span><span class="dm">AI agents · Systems</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
+    <a class="ap-row" href="#d8" data-cursor><span class="n">08</span><span class="ti">TwinMic</span><span class="dm">Speech DSP · Android</span><span class="go"><span>Open</span><i data-lucide="arrow-down-right"></i></span></a>
   </section>
 
   <!-- ============ ENTRIES ============ -->
@@ -243,11 +244,35 @@
         </div>
       </div>
     </article>
+
+    <article class="ap-entry" id="d8">
+      <div class="ap-entry__grid">
+        <div class="ap-entry__body">
+          <span class="ap-entry__num">FIG. 08 / RESEARCH · MOBILE</span>
+          <h3>Studio-clean voice from two cheap <em>mics</em></h3>
+          <p class="ap-entry__lede">Two cheap, unsynchronized recordings of the same voice hear the same speech but different noise. Line them up, their clocks never matched, so the engine recovers the offset and drift straight from the audio, and the part they agree on is your voice. I took the research version and kept it honest about where it actually wins, then built it into a real Android app: it records from a phone's mic array and cleans the room noise on-device, nothing uploaded.</p>
+          <div class="ap-spec">
+            <div><span class="k">Domain</span><span class="v">Speech enhancement · on-device DSP / ML</span></div>
+            <div><span class="k">Stack</span><span class="v">Python (numpy / scipy) · Kotlin · Jetpack Compose · on-device FFT + Wiener</span></div>
+            <div><span class="k">Output</span><span class="v">Research repo + Android app, verified on a Pixel</span></div>
+            <div><span class="k">Status</span><span class="v">Built · honest results</span></div>
+          </div>
+          <a class="ap-link" href="https://github.com/Abdk4Moura" target="_blank" rel="noopener" data-cursor>Repo &amp; app <i data-lucide="arrow-up-right"></i></a>
+        </div>
+        <div class="ap-entry__media reveal">
+          <div class="ap-frame" data-cursor>
+            <canvas data-anim="twinmic" aria-hidden="true"></canvas>
+            <span class="ap-frame__tick x"></span><span class="ap-frame__tick y"></span>
+            <span class="ap-frame__ax tl">FIG.08</span><span class="ap-frame__ax br">two noisy → one clean</span>
+          </div>
+        </div>
+      </div>
+    </article>
   </section>
 
   <!-- ============ APPENDIX ============ -->
   <section class="ap-appendix wrap" id="appendix">
-    <h3 class="ap-appendix__head">Appendix · research &amp; range</h3>
+    <h3 class="ap-appendix__head">Notes · research &amp; range</h3>
     <div class="ap-notes">
       <div class="ap-note reveal">
         <span class="k">A · Simulation</span>
@@ -269,7 +294,8 @@
 
   <!-- ============ CONTACT ============ -->
   <section class="ap-contact wrap" id="contact">
-    <h2 class="reveal">Always up for a <em>hard</em> problem.</h2>
+    <h2 class="reveal">Let's build something <em>good</em>.</h2>
+    <p class="reveal" style="max-width:58ch;color:var(--ink-2);font-size:1.05rem;line-height:1.62;margin:16px 0 30px;">Off the page, I care more about the work being honest than impressive. I'd rather ship the rough, real thing than polish a demo, and I like understanding the whole stack instead of just my slice. And yes, despite all the evidence here, I do step away from the screen.</p>
     <div class="ap-contact__row reveal d1">
       <a class="ap-btn" href="mailto:work.kaiserlautern@gmail.com?subject=Hello%20Abdulkabir" data-cursor data-magnetic><i data-lucide="mail"></i> Write to me</a>
       <button class="ap-copy" id="copyBtn" data-cursor type="button"><i data-lucide="copy" id="copyIco"></i><span id="copyTxt">work.kaiserlautern@gmail.com</span></button>

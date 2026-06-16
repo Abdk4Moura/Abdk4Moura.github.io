@@ -1,4 +1,4 @@
-/* ap-blog.js — apparatus blog index. Reads posts/posts.json (a list of
+/* ap-blog.js, apparatus blog index. Reads posts/posts.json (a list of
    markdown filenames), pulls each post's front-matter, sorts newest-first,
    renders apparatus-styled rows. No build step. */
 (function () {

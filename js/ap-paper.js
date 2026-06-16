@@ -1,4 +1,4 @@
-/* ap-paper.js — renders an interactive research paper (?paper=file.md).
+/* ap-paper.js, renders an interactive research paper (?paper=file.md).
    Pipeline: protect LaTeX math from the markdown pass -> showdown ->
    restore math -> KaTeX render -> mount interactive figures (ap-figures.js).
    A paper is markdown with $...$ / $$...$$ math and figure embeds:

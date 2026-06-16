@@ -1,5 +1,5 @@
 /* ============================================================
-   animations.js — live "figures" for the portfolio.
+   animations.js, live "figures" for the portfolio.
    All Canvas 2D. Thin ink strokes + coral accents on warm paper.
    Each animation only runs while on-screen (IntersectionObserver),
    pauses when the tab is hidden, caps DPR, and renders a single
@@ -33,7 +33,7 @@
   // Pull the live palette from CSS custom properties so the figures
   // recolor with the theme (light / dark) and across design directions.
   // Mutating C in place means running animations pick up new colors
-  // on their next frame — no re-init needed.
+  // on their next frame, no re-init needed.
   const CSS_KEYS = {
     "--anim-paper": "paper", "--anim-hero-bg": "heroBg", "--anim-fade": "fade",
     "--anim-hero-ink": "heroInk", "--anim-hero-accent": "heroAccent",
@@ -67,7 +67,7 @@
     ctx.closePath();
   }
 
-  // cheap smooth pseudo-noise (summed sines) — avoids a noise lib
+  // cheap smooth pseudo-noise (summed sines), avoids a noise lib
   function noise2(x, y, t) {
     return (
       Math.sin(x * 1.7 + t) * 0.5 +
@@ -77,8 +77,8 @@
   }
 
   /* ============================================================
-     Mount controller — wires DPR sizing, rAF, IO, visibility.
-     factory(ctx, w, h) -> { frame(t, dt), draw?(static) , resize() }
+     Mount controller, wires DPR sizing, rAF, IO, visibility.
+     factory(ctx, w, h) -> { frame(t, dt), draw?(static), resize() }
      ============================================================ */
   function mount(canvas, factory) {
     const ctx = canvas.getContext("2d", { alpha: true });
@@ -137,7 +137,7 @@
         if (!running && !document.hidden && inView()) { visible = true; start(); }
       }, 500);
     } else {
-      // No IO support — start when on-screen, re-check on scroll.
+      // No IO support, start when on-screen, re-check on scroll.
       const check = () => {
         const iv = inView();
         if (iv && !running && !document.hidden) { visible = true; start(); }
@@ -162,7 +162,7 @@
   }
 
   /* ============================================================
-     FIG 01 — ASR for tonal languages
+     FIG 01, ASR for tonal languages
      Scrolling waveform -> tone contour -> tonal glyph tokens.
      ============================================================ */
   function asr(ctx, w, h) {
@@ -264,7 +264,7 @@
   }
 
   /* ============================================================
-     FIG 02 — mini-PaaS deploy pipeline + streaming logs
+     FIG 02, mini-PaaS deploy pipeline + streaming logs
      ============================================================ */
   function deploy(ctx, w, h) {
     const stages = ["push", "build", "deploy", "live"];
@@ -341,7 +341,7 @@
   }
 
   /* ============================================================
-     FIG 03 — Spatial Engine: rotating wireframe (octahedron-ish)
+     FIG 03, Spatial Engine: rotating wireframe (octahedron-ish)
      ============================================================ */
   function spatial(ctx, w, h) {
     // vertices of an icosahedron (cheap, looks rich)
@@ -418,7 +418,7 @@
   }
 
   /* ============================================================
-     FIG 04 — FFIGEN: AST traversal -> Dart codegen
+     FIG 04, FFIGEN: AST traversal -> Dart codegen
      ============================================================ */
   function ffigen(ctx, w, h) {
     // small C AST on the left
@@ -498,7 +498,7 @@
   }
 
   /* ============================================================
-     FIG 05 — Quickshare P2P: direct routing + reroute on failure
+     FIG 05, Quickshare P2P: direct routing + reroute on failure
      ============================================================ */
   function p2p(ctx, w, h) {
     const cx = w / 2, cy = h / 2, R = Math.min(w, h) * 0.34;
@@ -586,7 +586,7 @@
   }
 
   /* ============================================================
-     FIG 06 — n8n workflow: pulses node->node, TTS emits waveform
+     FIG 06, n8n workflow: pulses node->node, TTS emits waveform
      ============================================================ */
   function workflow(ctx, w, h) {
     const labels = ["trigger", "format", "neuphonic", "output"];
@@ -652,7 +652,7 @@
   }
 
   /* ============================================================
-     HERO — calm flow field of thin ink curves (plotter feel)
+     HERO, calm flow field of thin ink curves (plotter feel)
      ============================================================ */
   function heroField(ctx, w, h) {
     const count = Math.min(240, Math.round((w * h) / 5200));
@@ -669,7 +669,7 @@
 
     return {
       frame(t) {
-        // gentle paper fade (trails) — cheap full-rect
+        // gentle paper fade (trails), cheap full-rect
         ctx.fillStyle = C.fade;
         ctx.fillRect(0, 0, w, h);
 
@@ -691,7 +691,7 @@
   }
 
   /* ============================================================
-     FIG 07 — Relay: out-of-band agent. A cursor glides + clicks on a
+     FIG 07, Relay: out-of-band agent. A cursor glides + clicks on a
      target screen, HID keystrokes land as text, a capture pulse returns.
      ============================================================ */
   function relay(ctx, w, h) {
@@ -781,9 +781,70 @@
   }
 
   /* ============================================================
+     FIG 08, TwinMic: two noisy mics lock into alignment, then a
+     clean voice waveform is revealed by a left-to-right pass.
+     ============================================================ */
+  function twinmic(ctx, w, h) {
+    const N = 32;
+    const voice = (i) => {
+      const x = i / (N - 1);
+      const syl = Math.max(0, Math.sin(x * Math.PI * 3.1 - 0.4));
+      return 0.16 + 0.84 * Math.pow(syl, 0.7) * (0.55 + 0.45 * Math.abs(Math.sin(i * 1.27)));
+    };
+    return {
+      frame(time) {
+        ctx.clearRect(0, 0, w, h);
+        const padX = w * 0.13, fullW = w - padX * 2, gap = fullW / N;
+        const bw = Math.max(2, gap * 0.5);
+        const rowAy = h * 0.24, rowBy = h * 0.46, cleanY = h * 0.78;
+        const ampTop = h * 0.085, ampClean = h * 0.19;
+        const cyc = (time * 0.17) % 1;            // B drifts, then locks
+        const locked = cyc > 0.5;
+        const driftPx = locked ? 0 : gap * 0.9 * (0.5 - cyc) * 2;
+        const sweep = (time * 0.2) % 1;           // the "cleaning" pass
+
+        ctx.font = "500 8px 'IBM Plex Mono',ui-monospace,monospace";
+        ctx.textAlign = "left"; ctx.fillStyle = C.muted;
+        ctx.fillText("mic A", padX, rowAy - ampTop - 6);
+        ctx.fillText("mic B", padX, rowBy - ampTop - 6);
+        ctx.textAlign = "right";
+        ctx.fillStyle = locked ? C.coral : C.muted;
+        ctx.fillText(locked ? "aligned" : "syncing", padX + fullW, rowAy - ampTop - 6);
+        ctx.textAlign = "left";
+
+        for (let i = 0; i < N; i++) {
+          const x = padX + i * gap + gap * 0.25;
+          const v = voice(i);
+          const nA = 0.34 * (Math.sin(i * 5.1 + time * 6) * 0.5 + 0.5);
+          const nB = 0.34 * (Math.sin(i * 4.3 - time * 5 + 1.7) * 0.5 + 0.5);
+          const hA = (v * 0.55 + nA) * ampTop, hB = (v * 0.55 + nB) * ampTop;
+          ctx.fillStyle = C.muted;
+          rr(ctx, x, rowAy - hA, bw, hA * 2, bw * 0.5); ctx.fill();
+          ctx.fillStyle = C.lineStrong;
+          rr(ctx, x + driftPx, rowBy - hB, bw, hB * 2, bw * 0.5); ctx.fill();
+        }
+
+        ctx.fillStyle = C.muted; ctx.fillText("clean", padX, cleanY - ampClean - 6);
+        for (let i = 0; i < N; i++) {
+          const x = padX + i * gap + gap * 0.25;
+          const hC = (0.12 + voice(i) * 0.88) * ampClean;
+          ctx.globalAlpha = (i / (N - 1)) <= sweep ? 1 : 0.16;
+          ctx.fillStyle = C.coral;
+          rr(ctx, x, cleanY - hC, bw, hC * 2, bw * 0.5); ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        const sx = padX + sweep * fullW;
+        ctx.strokeStyle = C.coral; ctx.lineWidth = 1.2; ctx.globalAlpha = 0.5;
+        ctx.beginPath(); ctx.moveTo(sx, cleanY - ampClean - 2); ctx.lineTo(sx, cleanY + ampClean + 2); ctx.stroke();
+        ctx.globalAlpha = 1;
+      },
+    };
+  }
+
+  /* ============================================================
      Boot
      ============================================================ */
-  const registry = { asr, deploy, spatial, ffigen, p2p, workflow, relay };
+  const registry = { asr, deploy, spatial, ffigen, p2p, workflow, relay, twinmic };
 
   function boot() {
     refreshPalette();

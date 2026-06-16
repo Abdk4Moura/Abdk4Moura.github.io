@@ -1,4 +1,4 @@
-/* ap-post.js — renders a single markdown post (?post=file.md) into the
+/* ap-post.js, renders a single markdown post (?post=file.md) into the
    apparatus prose column via showdown. Strips YAML front-matter first. */
 (function () {
   "use strict";
