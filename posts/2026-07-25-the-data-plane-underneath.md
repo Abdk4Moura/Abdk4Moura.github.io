@@ -405,7 +405,17 @@ the same connection, and a lost packet on stream A only stalls stream A.
 Stream B keeps flowing. There's no cross-stream head-of-line blocking,
 because each stream keeps its own sequencing.
 
-![no cross-stream head-of-line blocking in QUIC](img/quic-no-hol.svg)
+[FIG: no cross-stream head-of-line blocking in QUIC]
+```
+  TCP: one stream, one loss stalls everything behind it
+
+    [A1][A2][A3][A4] ---- loss on A2 ----> A3, A4 wait for A2's resend
+
+  QUIC: independent streams on one connection
+
+    stream A: [A1][A2 LOST][A3][A4] --> A3, A4 keep delivering
+    stream B: [B1][B2][B3]           --> unaffected by A's loss
+```
 
 QUIC also merges TLS 1.3 *into* the connection handshake instead of running
 it afterward. This is the payoff of the stacked-handshake picture from the
@@ -529,7 +539,19 @@ matters:
   ask for best-effort, partial reliability, or full reliability, per
   message, on the same channel.
 
-![WebRTC's DataChannel: a stack, plus ICE choosing the path](img/webrtc-stack.svg)
+[FIG: WebRTC's DataChannel: a stack, plus ICE choosing the path]
+```
+  application message                    ICE (connectivity process,
+        |                                 NOT a stack layer):
+        v                                  gather candidates (STUN/TURN),
+   SCTP   (multi-stream, tunable    <----  probe + validate pairs,
+        |  reliability)                    hand the winning UDP path
+        v                                  to the stack, then step aside
+   DTLS   (TLS-for-datagrams)
+        |
+        v
+   UDP    (the single path ICE selected carries all of it)
+```
 
 This is filament's browser fallback: the path that always connects,
 because it doesn't require any special network cooperation beyond what ICE
@@ -597,7 +619,37 @@ fake card never touches hardware directly; it rides on top of the real
 card, with a userspace detour in between where the encryption and
 re-addressing happen.
 
-![the packet's real trip, machine to machine](img/packet-real-trip.svg)
+[FIG: the packet's real trip, machine to machine]
+```
+  machine A                                       machine B
+
+  app A writes IP packet
+        |
+        v
+  kernel routes it -> tun0 (fake NIC)
+        |
+        v
+  VPN program reads inner packet
+  encrypts it, wraps it as PAYLOAD
+  of an outer packet addressed to
+  B's real public IP
+        |
+        v
+  real socket -> real NIC ---------- real wire ----------> real NIC
+                                                                |
+                                                                v
+                                                     kernel hands outer
+                                                     packet to VPN program
+                                                                |
+                                                                v
+                                                     decrypt, unwrap,
+                                                     write INNER packet
+                                                     into B's tun0
+                                                                |
+                                                                v
+                                                     kernel routes inner
+                                                     packet to app B
+```
 
 There's a sharp practical consequence of that wrapping, and it's one of the
 most common ways a real VPN quietly breaks. The outer packet is the inner
@@ -619,7 +671,24 @@ encapsulation. Get this wrong and you get the single most confusing VPN bug
 there is, where ping works, SSH login works, and then a large paste or a
 file copy hangs forever.
 
-![why the overlay MTU must be smaller than the physical MTU](img/overlay-mtu.svg)
+[FIG: why the overlay MTU must be smaller than the physical MTU]
+```
+  inner packet from the app (fills the app's view of the MTU):
+
+    [ inner IP packet ....................... 1500 bytes ]
+
+  after the VPN wraps it (encrypt + outer UDP/IP headers):
+
+    [ outer hdr ][ inner packet + crypto ............... > 1500 ]
+                                                          ^^^^^
+                            too big for a 1500-byte physical frame
+
+  with DF set, this doesn't fragment, it just DISAPPEARS.
+
+  fix: set the TUN MTU low (e.g. 1420) so inner + overhead <= 1500:
+
+    [ outer hdr ][ inner packet (<=1420) + crypto ] <= 1500  OK
+```
 
 One more design fact about VPNs matters, and it's easy to get backwards:
 the tunnel itself should be **best-effort**, never reliable. That sounds
@@ -758,7 +827,21 @@ in the top-left, though: UDP is not a "stream." It's the best-effort
 together as "streams" is exactly the confusion this chart is meant to clear
 up.
 
-![the two axes](img/two-axes.svg)
+[FIG: the two axes]
+```
+                    APP <-> APP                MACHINE <-> MACHINE
+                    (one app's data)           (a whole machine's packets)
+
+  BEST-EFFORT       UDP                        WireGuard
+                     = the datagram (message)   (best-effort by design;
+                       primitive; you build      the inner protocol owns
+                       reliability yourself,     reliability)
+                       or don't
+
+  RELIABLE          TCP (the reliable stream);  the box you almost never
+                    QUIC, WebRTC (reliable       want: reliable-over-reliable
+                    multi-stream)                is TCP-over-TCP meltdown
+```
 
 QUIC and WebRTC both add a wrinkle worth naming inside that bottom-left
 cell: QUIC is reliable-by-default per stream but also exposes an explicit
@@ -845,7 +928,27 @@ used to install a session key into WireGuard, so filament still owns who
 you are and who you're talking to, and WireGuard just gets told which keys
 to use for the bytes.
 
-![the decision, filament as the network around a borrowed data plane](img/the-decision.svg)
+[FIG: the decision, filament as the network around a borrowed data plane]
+```
+  filament control plane (stays filament's job):
+    identity, discovery, NAT traversal/holepunch, relay selection,
+    path selection (direct UDP / TCP shim / WebRTC)
+                            |
+                            v   selects an underlay path, installs keys
+  +------------------+  +------------------+  +------------------+
+  | direct UDP        |  | UDP-over-TCP or  |  | WebRTC (browser,  |
+  | (clean case)       |  | relay (UDP       |  |  or no-admin      |
+  |                    |  |  blocked/policed)|  |  fallback)        |
+  +------------------+  +------------------+  +------------------+
+                            |
+                            v   WireGuard rides on top of the chosen path
+  +-----------------------------------------------------------+
+  | L3 data plane = WireGuard (kernel when possible, userspace  |
+  | otherwise). Encrypted IP tunnel. Borrowed, not homegrown.    |
+  | (the old QUIC-datagram plane survives only as the browser/   |
+  |  migration bridge, since browsers can't run WireGuard at all)|
+  +-----------------------------------------------------------+
+```
 
 The costs are real and worth stating plainly, not smoothing over. This adds
 a WireGuard dependency (kernel where present, plus a userspace
