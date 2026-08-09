@@ -32,6 +32,17 @@
       dEl.textContent = fmtDate(m.date);
       const conv = new showdown.Converter({ tables: true, strikethrough: true, ghCompatibleHeaderId: true, simpleLineBreaks: false });
       bEl.innerHTML = conv.makeHtml(body);
+      // KaTeX, same delimiters and options as the papers renderer
+      if (window.renderMathInElement) {
+        window.renderMathInElement(bEl, {
+          delimiters: [
+            { left: "$$", right: "$$", display: true },
+            { left: "$", right: "$", display: false },
+          ],
+          throwOnError: false,
+          errorColor: "var(--red)",
+        });
+      }
       if (window.lucide && window.lucide.createIcons) window.lucide.createIcons();
     })
     .catch(() => { tEl.textContent = "Post not found"; bEl.innerHTML = "<p>Could not load this post.</p>"; });
