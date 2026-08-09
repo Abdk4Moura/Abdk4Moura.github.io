@@ -17,6 +17,28 @@
   }
   function fmtDate(d) { if (!d) return ""; const dt = new Date(d); return isNaN(dt) ? d : dt.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" }); }
 
+  // Pull math spans out of the markdown so showdown never mangles them
+  // (underscores, backslashes, asterisks). Same approach as ap-paper.js.
+  function protectMath(src) {
+    const store = [];
+    const tok = (raw) => { store.push(raw); return "MATH" + (store.length - 1) + ""; };
+    const lines = src.split("\n");
+    let fenced = false, out = [];
+    for (let line of lines) {
+      if (/^\s*```/.test(line)) { fenced = !fenced; out.push(line); continue; }
+      if (fenced) { out.push(line); continue; }
+      const code = []; line = line.replace(/`[^`]*`/g, (m) => { code.push(m); return "C" + (code.length - 1) + ""; });
+      line = line.replace(/\$\$([^$]|\$(?!\$))+?\$\$/g, (m) => tok(m));
+      line = line.replace(/\$(?!\s)([^$\n]+?)(?<!\s)\$/g, (m) => tok(m));
+      line = line.replace(/C(\d+)/g, (_, i) => code[+i]);
+      out.push(line);
+    }
+    return { text: out.join("\n"), store };
+  }
+  function restoreMath(html, store) {
+    return html.replace(/MATH(\d+)/g, (_, i) => store[+i]);
+  }
+
   const file = new URLSearchParams(location.search).get("post");
   const tEl = document.getElementById("postTitle");
   const dEl = document.getElementById("postDate");
@@ -31,7 +53,10 @@
       tEl.textContent = m.title;
       dEl.textContent = fmtDate(m.date);
       const conv = new showdown.Converter({ tables: true, strikethrough: true, ghCompatibleHeaderId: true, simpleLineBreaks: false });
-      bEl.innerHTML = conv.makeHtml(body);
+      const { text: guarded, store } = protectMath(body);
+      let html = restoreMath(conv.makeHtml(guarded), store);
+      html = html.replace(/<p>\s*(\$\$[\s\S]+?\$\$)\s*<\/p>/g, '<div class="mathblock">$1</div>');
+      bEl.innerHTML = html;
       // KaTeX, same delimiters and options as the papers renderer
       if (window.renderMathInElement) {
         window.renderMathInElement(bEl, {
